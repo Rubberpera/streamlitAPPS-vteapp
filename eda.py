@@ -62,7 +62,8 @@ def load1(file):
 
 @st.cache(suppress_st_warning=True,allow_output_mutation=True)
 def load2():
-    return pd.read_excel('data\FEEDBACK_ex.xlsx')
+    st.write("Per favore carica il dataset")
+    return st.stop()
 
 if eda_file is not None:
     vte = load1(file=eda_file)
