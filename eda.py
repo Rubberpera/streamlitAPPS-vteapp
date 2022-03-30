@@ -71,7 +71,7 @@ else:
     vte = load2()    
 
 st.text('Anteprima del file caricato:')
-st.write(vte.dtypes)    
+st.write(vte.dtypes())    
 st.text("")
 st.text("")
 st.text("")
