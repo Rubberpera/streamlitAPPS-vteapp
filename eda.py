@@ -75,6 +75,9 @@ st.write(vte.head())
 st.text("")
 st.text("")
 st.text("")
+
+st.write(vte.dtypes)
+
 #####   CREO NUOVE VARIABILI
 vte['createdtime2'] = pd.to_datetime(vte.createdtime.str.split().str[0],format='%d/%m/%Y') # aggiunto
 vte['closing_time (TT VTE)2'] = pd.to_datetime(vte['closing_time (TT VTE)'].str.split().str[0],format='%d/%m/%Y')
