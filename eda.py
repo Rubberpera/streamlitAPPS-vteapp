@@ -502,8 +502,15 @@ st.markdown(
 COLAA = st.selectbox('Seleziona la prima variabile',vte_full_masked.columns,index=2)
 COLBB = st.selectbox('Seleziona la seconda variabile',vte_full_masked.columns,index=3)
 
-z = vte_full_masked.pivot_table(index=COLAA,columns=COLBB,aggfunc='count')['operatore']
+FUNZIONE = st.selectbox('Vuoi vedere i valori assoluti o percentuali (somma=100% per colonna)',
+['CONTA (valori assoluti)','PERCENTUALE (valori assoluti divisi totale colonna)'],index=1)
 
+if FUNZIONE=='CONTA (valori assoluti)':
+    z = vte_full_masked.pivot_table(index=COLAA,columns=COLBB,aggfunc='count')['operatore']
+
+else:
+    z = vte_full_masked.pivot_table(index=COLAA,columns=COLBB,aggfunc='count')['operatore']
+    z = z.div(z.sum()).round(2)
 named_colorscales = px.colors.named_colorscales()
 
 HEAT = px.imshow(z, text_auto=True,width=1000,labels=dict(color="Conta tickets"),color_continuous_scale='GREYS',)
