@@ -76,8 +76,8 @@ st.text("")
 st.text("")
 st.text("")
 #####   CREO NUOVE VARIABILI
-vte.createdtime = pd.to_datetime(vte.createdtime) # aggiunto
-vte['closing_time (TT VTE)'] = pd.to_datetime(vte['closing_time (TT VTE)'])
+vte.createdtime = pd.to_datetime(vte.createdtime.str.split().str[0],format='%d/%m/%Y') # aggiunto
+vte['closing_time (TT VTE)'] = pd.to_datetime(vte['closing_time (TT VTE)'].str.split().str[0],format='%d/%m/%Y')
 
 vte['data_open'] = vte.createdtime.dt.date
 vte['giorno_open'] = vte.createdtime.dt.day_name()
