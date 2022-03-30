@@ -167,7 +167,7 @@ vte_full_masked = vte_full[mask_prodotti&mask_voti&mask_too_long&mask_prodotti2&
 ###### CONTA VALORI 
 st.header('Conta',anchor='1')
 variabile_conta_valori = st.selectbox('Seleziona una variabile per contare il numero di Tickets (Esempio: operatore)'
-,vte_full.columns.tolist(),index=4)
+,vte_full.columns.tolist(),index=6)
 st.write(contavalori(vte_full_masked,variabile_conta_valori))
 st.text("")
 st.text("")
@@ -446,7 +446,7 @@ st.markdown(
 
 """)
 
-piv2 = vte_full.pivot_table(index=['gruppoFamiglia','voto_feedback'],values='Tot_tickets_operatore',
+piv2 = vte_full_masked.pivot_table(index=['gruppoFamiglia','voto_feedback'],values='Tot_tickets_operatore',
                      aggfunc='count')
 prova4 = piv2.merge(piv2.groupby(level=[0]).sum(),left_index=True,right_index=True,suffixes=('','to_drop')).\
 merge(piv2.groupby(level=[1]).sum(),left_index=True,right_index=True,suffixes=('','to_drop2')).\
@@ -488,6 +488,52 @@ st.text("")
 st.text("")
 
 ############## più dettaglio
+
+st.markdown(
+"""
+### Seleziona due variabili e incrocia il loro numero di tickets
+
+
+**Può essere utile per scoprire quali prodotti ci sono dentro ogni famiglia o quale tipo di problema è più riccorrente per prodotto**
+
+
+""")
+
+COLAA = st.selectbox('Seleziona la prima variabile',vte_full_masked.columns,index=2)
+COLBB = st.selectbox('Seleziona la seconda variabile',vte_full_masked.columns,index=3)
+
+z = vte_full_masked.pivot_table(index=COLAA,columns=COLBB,aggfunc='count')['operatore']
+
+named_colorscales = px.colors.named_colorscales()
+
+HEAT = px.imshow(z, text_auto=True,width=1000,labels=dict(color="Conta tickets"),color_continuous_scale='GREYS',)
+
+axis_template = dict( 
+             showgrid = False, zeroline = False,
+             showticklabels = True,
+             ticks = '' )
+
+HEAT.update_traces(colorbar_thickness=1)
+
+HEAT.update_layout(plot_bgcolor='rgba(0,0,0,0)',
+    xaxis = axis_template,
+    yaxis = axis_template,
+    showlegend = False,
+    width = 700, height = 700,
+    autosize = True ,
+        margin=dict(
+        l=50,
+        r=50,
+        b=100,
+        t=100,
+        pad=4
+    ),)
+HEAT.update_xaxes(tickangle=45, tickfont=dict( size=8))
+HEAT.update_yaxes(tickangle=0, tickfont=dict( size=8))
+HEAT.update(layout_coloraxis_showscale=False)
+st.plotly_chart(HEAT)
+
+
 
 
 # prova download
