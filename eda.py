@@ -76,19 +76,19 @@ st.text("")
 st.text("")
 st.text("")
 #####   CREO NUOVE VARIABILI
-vte.createdtime = pd.to_datetime(vte.createdtime.str.split().str[0],format='%d/%m/%Y') # aggiunto
-vte['closing_time (TT VTE)'] = pd.to_datetime(vte['closing_time (TT VTE)'].str.split().str[0],format='%d/%m/%Y')
+vte['createdtime2'] = pd.to_datetime(vte.createdtime.str.split().str[0],format='%d/%m/%Y') # aggiunto
+vte['closing_time (TT VTE)2'] = pd.to_datetime(vte['closing_time (TT VTE)'].str.split().str[0],format='%d/%m/%Y')
 
-vte['data_open'] = vte.createdtime.dt.date
-vte['giorno_open'] = vte.createdtime.dt.day_name()
-vte['ora_open'] = vte.createdtime.dt.hour
+vte['data_open'] = vte.createdtime2.dt.date
+vte['giorno_open'] = vte.createdtime2.dt.day_name()
+vte['ora_open'] = vte.createdtime2.dt.hour
 # chiusura
-vte['data_close'] = vte['closing_time (TT VTE)'].dt.date
-vte['giorno_close'] = vte['closing_time (TT VTE)'].dt.day_name()
-vte['ora_close'] = vte['closing_time (TT VTE)'].dt.hour
+vte['data_close'] = vte['closing_time (TT VTE)2'].dt.date
+vte['giorno_close'] = vte['closing_time (TT VTE)2'].dt.day_name()
+vte['ora_close'] = vte['closing_time (TT VTE)2'].dt.hour
 vte.head(3)
 # tempo trascorso tra open e close
-vte['tempo_chiusura'] = (vte['closing_time (TT VTE)']-vte.createdtime)
+vte['tempo_chiusura'] = (vte['closing_time (TT VTE)2']-vte.createdtime2)
 vte['tempo_chiusura_H'] = vte.tempo_chiusura / pd.Timedelta(hours=1) # in ore
 vte['tempo_chiusura'] = vte['tempo_chiusura'].dt.days
 # metodo interquantile per trovare outliers
