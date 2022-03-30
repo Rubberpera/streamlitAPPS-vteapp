@@ -60,26 +60,27 @@ eda_file = st.file_uploader('Carica un file excel scaricato da VTE (un file di d
 def load1(file):
     return pd.read_excel(file)
 
-@st.cache(suppress_st_warning=True,allow_output_mutation=True)
-def load2():
-    st.write("Per favore carica il dataset")
-    return st.stop()
+#@st.cache(suppress_st_warning=True,allow_output_mutation=True)
+#def load2():
+#    return pd.read_excel('data\FEEDBACK_ex.xlsx')
 
 if eda_file is not None:
     vte = load1(file=eda_file)
 else:
-    vte = load2()    
+    st.warning('Per favore carica un file')
+    st.stop()
+  
 
 st.text('Anteprima del file caricato:')
-st.write(vte.dtypes())    
+st.write(vte.head())    
 st.text("")
 st.text("")
 st.text("")
-
-
 #####   CREO NUOVE VARIABILI
 vte['createdtime2'] = pd.to_datetime(vte.createdtime.str.split().str[0],format='%d/%m/%Y') 
 vte['closing_time (TT VTE)2'] = pd.to_datetime(vte['closing_time (TT VTE)'].str.split().str[0],format='%d/%m/%Y')
+vte['createdtime2'] = pd.to_datetime(vte['createdtime2'])
+vte['closing_time (TT VTE)2'] = pd.to_datetime(vte['closing_time (TT VTE)2'])
 
 vte['data_open'] = vte.createdtime2.dt.date
 vte['giorno_open'] = vte.createdtime2.dt.day_name()
@@ -90,9 +91,12 @@ vte['giorno_close'] = vte['closing_time (TT VTE)2'].dt.day_name()
 vte['ora_close'] = vte['closing_time (TT VTE)2'].dt.hour
 vte.head(3)
 # tempo trascorso tra open e close
-vte['tempo_chiusura'] = (vte['closing_time (TT VTE)2']-vte.createdtime2)
-vte['tempo_chiusura_H'] = vte.tempo_chiusura / pd.Timedelta(hours=1) # in ore
+vte['tempo_chiusura'] = vte['closing_time (TT VTE)2']-vte.createdtime2
+vte['tempo_chiusura_H'] = vte.tempo_chiusura / pd.Timedelta('1H') # in ore
+print(vte['tempo_chiusura_H'])
 vte['tempo_chiusura'] = vte['tempo_chiusura'].dt.days
+
+
 # metodo interquantile per trovare outliers
 q1,q3 = np.quantile(vte.tempo_chiusura_H.fillna(0),[0.25,0.75])
 IQR = q3-q1
@@ -126,6 +130,8 @@ def cerca_anni(year):
     x = re.search(r"(19[0-9]{2})|([4-9]{2})", year)
     if x :
         return(x.group())
+
+
 
 #################################     CREO LE MASCHERE....SIDEBA + SIDEBAR COLOR
 
@@ -499,8 +505,7 @@ st.markdown('### GUIDA AL DOWNLOAD: \n1. Inserisci un nome senza spazi,\
 nome_file = st.text_input('Se vuoi puoi scaricare il dataset con le nuove variabili: inserisci un nome')
 
 st.download_button(
-"Press to Download",
-csv,
+"Press to Download",csv,
 f"{nome_file}.csv",
 "text/csv",
 key='download-csv'
@@ -512,11 +517,3 @@ st.dataframe(vte_full_masked.sample(50))
 st.text("")
 st.text("")
 st.text("")
-
-
-
-
-
-
-
-              
