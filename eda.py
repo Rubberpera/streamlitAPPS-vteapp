@@ -130,9 +130,18 @@ def cerca_anni(year):
 
 
 
-prodotti = sidebar.multiselect('Seleziona il prodotto',vte_full.gruppoFamiglia.unique(),
+prodotti = sidebar.multiselect('Seleziona la famiglia',vte_full.gruppoFamiglia.unique(),
 vte_full.gruppoFamiglia.unique())
 mask_prodotti = vte_full.gruppoFamiglia.isin(prodotti)
+
+prodotti2 = sidebar.multiselect('Seleziona la famiglia: ATTENZIONE quando vuoi selezionare i prodotti attiva anche il relativo filtro della famiglia'
+                                ,vte_full.Prodotto.unique(),
+vte_full.Prodotto.unique())
+mask_prodotti2 = vte_full.Prodotto.isin(prodotti2)
+
+sottomotivo = sidebar.multiselect('Seleziona i sottomotivi',vte_full.Sottomotivo.unique(),
+vte_full.Sottomotivo.unique())
+mask_sottomotivo = vte_full.Sottomotivo.isin(sottomotivo)
 
 voti = sidebar.multiselect('Seleziona il voto',vte_full.voto_feedback.unique(),
 vte_full.voto_feedback.unique())
@@ -143,7 +152,7 @@ too_long = sidebar.multiselect('Seleziona 1 per eliminare gli outliers (tempi di
 vte_full.tempi_troppo_lunghi.unique())
 mask_too_long = vte_full.tempi_troppo_lunghi.isin(too_long)
 
-vte_full_masked = vte_full[mask_prodotti&mask_voti&mask_too_long].copy()
+vte_full_masked = vte_full[mask_prodotti&mask_voti&mask_too_long&mask_prodotti2&mask_sottomotivo].copy()
 
 
 
@@ -179,7 +188,7 @@ st.markdown('Migliori operatori (si può filtrare per prodotto e presenza di out
 st.markdown('- ho selezionato operatori con  totale tickets > 10\n\
 - dove percentuale di punteggio 5 sia **maggiore** a quella di punteggio 1 e 2')
 
-OP = raggruppa(vte_full[mask_prodotti&mask_too_long],'operatore','voto_feedback').sort_values('TOT',ascending=False)
+OP = raggruppa(vte_full[mask_prodotti&mask_too_long&mask_prodotti2&mask_sottomotivo],'operatore','voto_feedback').sort_values('TOT',ascending=False)
 OP.sort_values('5_pct',ascending=False).query('TOT>50').query('`5_pct`>50')
 mask1 = OP.apply(lambda df: df['5_pct']>df['1_pct'],axis=1)
 mask2 = OP.apply(lambda df: df['5_pct']>df['2_pct'],axis=1)
@@ -208,7 +217,7 @@ st.markdown('Peggiori operatori (si può filtrare per prodotto e presenza di out
 st.markdown('- ho selezionato operatori con  totale tickets > 50, percentuale punteggio 1 > 50%\n\
 - a quelli sopra ho aggiunto gli operatori con percentuale di punteggio 5 sia **minore** a quella di punteggio 1 e 2')
 
-OP_down = raggruppa(vte_full[mask_prodotti&mask_too_long],'operatore','voto_feedback')
+OP_down = raggruppa(vte_full[mask_prodotti&mask_too_long&mask_prodotti2&mask_sottomotivo],'operatore','voto_feedback')
 #OP_down.query('TOT>50').query('`1_pct`>50').sort_values(['1_pct','5_pct'],ascending=[False,True])
 mask3 = OP_down.apply(lambda df: df['5_pct']<df['1_pct'],axis=1)
 mask4 = OP_down.apply(lambda df: df['5_pct']<df['2_pct'],axis=1)
@@ -386,11 +395,11 @@ else :
     fig3, ax3 = plt.subplots()
     ax4 = ax3.twinx()     
     # histogram
-    vte_full[mask_prodotti&mask_voti][vte_full.tempi_troppo_lunghi==0].\
+    vte_full[mask_prodotti&mask_voti&mask_prodotti2&mask_sottomotivo][vte_full.tempi_troppo_lunghi==0].\
         tempo_chiusura_H.plot.hist(figsize=(10,3),alpha=1.0,ax=ax3,bins=20,density=False,color = "#023047")
     plt.xticks(np.arange(0,125,5),np.arange(0,125,5))
     # boxplot
-    vte_full[mask_prodotti&mask_voti][vte_full.tempi_troppo_lunghi==0].\
+    vte_full[mask_prodotti&mask_voti&mask_prodotti2&mask_sottomotivo][vte_full.tempi_troppo_lunghi==0].\
         tempo_chiusura_H.plot.box(figsize=(10,3),
                  color=dict(boxes="#ffb300", whiskers="#ffb300", medians="#ffb300", caps="#ffb300"),
              boxprops=dict(linestyle='-', linewidth=3.5,color='#ffb300'),
