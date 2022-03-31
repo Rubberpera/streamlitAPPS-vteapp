@@ -154,7 +154,10 @@ mask_sottomotivo = vte_full.Sottomotivo.isin(sottomotivo)
 voti = sidebar.multiselect('Seleziona il voto',vte_full.voto_feedback.unique(),
 vte_full.voto_feedback.unique())
 mask_voti = vte_full.voto_feedback.isin(voti)
+
+
 sidebar.markdown('Per trovare gli outliers ho usato metodo [IQR Inter Quantile](https://en.wikipedia.org/wiki/Interquartile_range)')
+sidebar.image('img/iqr.png')
 too_long = sidebar.multiselect('Seleziona 1 per eliminare gli outliers (tempi di chiusura oltre le 100 ore circa (4 gg)) '
 ,vte_full.tempi_troppo_lunghi.unique(),
 vte_full.tempi_troppo_lunghi.unique())
